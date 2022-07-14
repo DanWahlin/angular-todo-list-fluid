@@ -20,6 +20,9 @@
     "@angular/platform-browser": "~14.0.5",
     "@angular/platform-browser-dynamic": "~14.0.5",
     "@angular/router": "~14.0.5",
+    "@fluidframework/azure-client": "^1.0.1",
+    "@fluidframework/test-runtime-utils": "^0.57.2",
+    "fluid-framework": "^1.2.1",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"
@@ -28,6 +31,7 @@
     "@angular-devkit/build-angular": "^14.0.5",
     "@angular/cli": "~14.0.5",
     "@angular/compiler-cli": "^14.0.5",
+    "@ngx-env/builder": "^2.2.0",
     "@types/jasmine": "~4.0.3",
     "jasmine-core": "~4.1.0",
     "karma": "~6.3.0",
