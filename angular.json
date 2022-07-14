@@ -34,7 +34,24 @@
               "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
               "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [],
+            "allowedCommonJsDependencies": [
+              "base64-js",
+              "debug",
+              "crc-32",
+              "cross-fetch",
+              "json-stringify-safe",
+              "lodash/merge",
+              "lodash/cloneDeep",
+              "path-browserify",
+              "querystring",
+              "sillyname",
+              "url-parse",
+              "url",
+              "@fluidframework/container-runtime-definitions",
+              "@fluidframework/runtime-definitions",
+              "@fluidframework/test-runtime-utils"
+            ]
           },
           "configurations": {
             "production": {
@@ -42,7 +59,7 @@
                 {
                   "type": "initial",
                   "maximumWarning": "500kb",
-                  "maximumError": "1mb"
+                  "maximumError": "1.5mb"
                 },
                 {
                   "type": "anyComponentStyle",
