@@ -1,44 +1,22 @@
 import { Injectable } from '@angular/core';
-import { AzureClient, AzureClientProps, AzureContainerServices, AzureMember } from '@fluidframework/azure-client';
+import { AzureClient, AzureClientProps, AzureContainerServices } from '@fluidframework/azure-client';
 import { ContainerSchema, IFluidContainer, SharedMap } from 'fluid-framework';
 import { InsecureTokenProvider } from "@fluidframework/test-runtime-utils";
-
-export type TodoModel = Readonly<{
-    createTodo(todoId: string, myAuthor: AzureMember): any;
-    moveTodo(todoId: string, newPos: number): void;
-    setChangeListener(listener: () => void): void;
-    removeChangeListener(listener: () => void): void;
-}>;
 
 @Injectable({
     providedIn: 'root'
 })
-export class FluidService {
-    useAzure = false;
-    sharedTodos: SharedMap | undefined;
+export class FluidContainerService {
+    useAzure = !!process.env.NG_APP_USE_AZURE;
     containerSchema: ContainerSchema = {
         initialObjects: {
-            map: SharedMap,
+            todosSharedMap: SharedMap,
         }
     }
 
     constructor() { }
 
-    getContainerId(): { containerId: string; isNew: boolean } {
-        let containerId = '';
-        let isNew = false;
-
-        if (location.hash.length === 0) {
-            isNew = true;
-        }
-        else {
-            containerId = location.hash.substring(1);
-        }
-
-        return { containerId, isNew };
-    }
-
-    async getFluidContainer(): Promise<{ container: IFluidContainer, services: AzureContainerServices }> {
+    async getFluidData(): Promise<SharedMap> {
 
         let { containerId, isNew } = this.getContainerId();
         let container: IFluidContainer;
@@ -55,10 +33,24 @@ export class FluidService {
             ({ container, services } = await client.getContainer(containerId, this.containerSchema));
         }
 
-        return { container, services };
+        return container.initialObjects.todosSharedMap as SharedMap;
     }
 
-    getConnectionConfig(): AzureClientProps {
+    private getContainerId(): { containerId: string; isNew: boolean } {
+        let containerId = '';
+        let isNew = false;
+
+        if (location.hash.length === 0) {
+            isNew = true;
+        }
+        else {
+            containerId = location.hash.substring(1);
+        }
+
+        return { containerId, isNew };
+    }
+
+    private getConnectionConfig(): AzureClientProps {
         return this.useAzure ? {
             connection: {
                 type: 'remote',
@@ -75,6 +67,4 @@ export class FluidService {
             }
         };
     }
-
-
 }

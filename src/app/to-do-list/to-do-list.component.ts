@@ -6,6 +6,8 @@ import {
   moveItemInArray,
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
+import { FluidModelService } from '../core/fluid-model.service';
+import { SharedMap } from 'fluid-framework';
 
 @Component({
   selector: 'app-to-do-list',
@@ -14,6 +16,7 @@ import {
 })
 export class ToDoListComponent implements OnInit {
   todoForm: FormGroup;
+  todosSharedMap: SharedMap;
 
   items: Item[] = [
     { description: 'Get groceries', done: true },
@@ -22,12 +25,14 @@ export class ToDoListComponent implements OnInit {
     { description: 'Hangout with friends', done: false },
   ];
   done: Item[] = [];
-  constructor(private fb: FormBuilder) {}
 
-  ngOnInit(): void {
+  constructor(private fb: FormBuilder, private fluidModelService: FluidModelService) {}
+
+  async ngOnInit() {
     this.todoForm = this.fb.group({
       item: ['', Validators.required],
     });
+    this.todosSharedMap = await this.fluidModelService.getTodosSharedMap();
   }
 
   addItem(description: string) {
@@ -35,6 +40,7 @@ export class ToDoListComponent implements OnInit {
       description,
       done: false,
     });
+    this.fluidModelService.updateTodosSharedMap(this.items);
   }
 
   deleteItem(item: any) {

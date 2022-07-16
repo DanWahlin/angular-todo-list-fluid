@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { FluidService } from './core/fluid.service';
 
 @Component({
   selector: 'app-root',
@@ -7,7 +6,7 @@ import { FluidService } from './core/fluid.service';
 })
 export class AppComponent implements OnInit {
   
-  constructor(private fluidService: FluidService) {}
+  constructor() {}
 
   ngOnInit(): void {}
 }

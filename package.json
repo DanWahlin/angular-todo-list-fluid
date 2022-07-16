@@ -3,10 +3,12 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "ng serve -o",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "frs:local": "npx @fluidframework/azure-local-service@latest",
+    "start:local": "cross-env NG_APP_USE_AZURE='\"false\"' npm run start",
+    "start:frs": "cross-env NG_APP_USE_AZURE='\"true\"' npm run start"
   },
   "private": true,
   "dependencies": {
@@ -35,6 +37,7 @@
     "@ngx-env/builder": "^2.2.0",
     "@types/debug": "^4.1.7",
     "@types/jasmine": "~4.0.3",
+    "cross-env": "^7.0.3",
     "jasmine-core": "~4.1.0",
     "karma": "~6.3.0",
     "karma-chrome-launcher": "~3.1.0",
