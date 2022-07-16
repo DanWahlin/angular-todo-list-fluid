@@ -1,39 +1,60 @@
 import { Injectable } from '@angular/core';
 import { AzureClient, AzureClientProps, AzureContainerServices } from '@fluidframework/azure-client';
-import { ContainerSchema, IFluidContainer, SharedMap } from 'fluid-framework';
+import { ConnectionState, ContainerSchema, IFluidContainer, SharedMap } from 'fluid-framework';
 import { InsecureTokenProvider } from "@fluidframework/test-runtime-utils";
 
 @Injectable({
     providedIn: 'root'
 })
 export class FluidContainerService {
-    useAzure = !!process.env.NG_APP_USE_AZURE;
+    useAzure = process.env.NG_APP_USE_AZURE;
     containerSchema: ContainerSchema = {
-        initialObjects: {
-            todosSharedMap: SharedMap,
-        }
+        initialObjects: {  map: SharedMap }
     }
+    container: IFluidContainer;
+    services: AzureContainerServices;
 
     constructor() { }
 
-    async getFluidData(): Promise<SharedMap> {
+    async getFluidData(): Promise<{container:IFluidContainer, services: AzureContainerServices, sharedMap: SharedMap}> {
+        await this.getFluidContainer();
+        // Return container, services, and SharedMap from the container
+        return { 
+            container: this.container, 
+            services: this.services, 
+            sharedMap: this.container.initialObjects.map as SharedMap
+        };
+    }
 
-        let { containerId, isNew } = this.getContainerId();
+    async getFluidContainer() {
         let container: IFluidContainer;
         let services: AzureContainerServices;
-
+        let { containerId, isNew } = this.getContainerId();
         const client = new AzureClient(this.getConnectionConfig());
+        console.log('Server location: ' + (this.useAzure === 'true' ? 'Azure' : 'Local'));
 
         if (isNew) {
+            // Create container and add SharedMap into the initialObjects
             ({ container, services } = await client.createContainer(this.containerSchema));
             containerId = await container.attach();
             location.hash = containerId;
         }
         else {
+            // Retrieve existing container
             ({ container, services } = await client.getContainer(containerId, this.containerSchema));
         }
 
-        return container.initialObjects.todosSharedMap as SharedMap;
+        this.container = container;
+        this.services = services;
+
+        if (this.container.connectionState !== ConnectionState.Connected) {
+            await new Promise<void>((resolve) => {
+                this.container.once("connected", () => {
+                    console.log('Container connected');
+                    resolve();
+                });
+            });
+        }
     }
 
     private getContainerId(): { containerId: string; isNew: boolean } {
@@ -51,7 +72,7 @@ export class FluidContainerService {
     }
 
     private getConnectionConfig(): AzureClientProps {
-        return this.useAzure ? {
+        return this.useAzure === 'true' ? {
             connection: {
                 type: 'remote',
                 // Information about using a secure token provider can be found here:
@@ -62,7 +83,7 @@ export class FluidContainerService {
         } : {
             connection: {
                 type: 'local',
-                tokenProvider: new InsecureTokenProvider("fooBar", { id: "userId" }),
+                tokenProvider: new InsecureTokenProvider("", { id: "userId" }),
                 endpoint: "http://localhost:7070"
             }
         };

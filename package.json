@@ -7,8 +7,8 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "frs:local": "npx @fluidframework/azure-local-service@latest",
-    "start:local": "cross-env NG_APP_USE_AZURE='\"false\"' npm run start",
-    "start:frs": "cross-env NG_APP_USE_AZURE='\"true\"' npm run start"
+    "start:local": "cross-env NG_APP_USE_AZURE=false npm run start",
+    "start:frs": "cross-env NG_APP_USE_AZURE=true npm run start"
   },
   "private": true,
   "dependencies": {

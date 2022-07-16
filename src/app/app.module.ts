@@ -6,7 +6,7 @@ import { AppComponent } from './app.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NavbarComponent } from './navbar/navbar.component';
-import { ToDoListComponent } from './to-do-list/to-do-list.component';
+import { ToDoListComponent } from './todo-list/todo-list.component';
 import { MaterialModule } from './material.module';
 
 @NgModule({
