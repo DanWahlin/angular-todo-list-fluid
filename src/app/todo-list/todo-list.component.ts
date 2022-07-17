@@ -26,7 +26,7 @@ export class ToDoListComponent implements OnInit {
     this.todoForm = this.fb.group({
       item: ['', Validators.required],
     });
-    await this.fluidModelService.initSharedMap();
+    await this.fluidModelService.initFluidContainer();
 
     // Register a handler to update the UI when the shared map changes.
     this.subscription = this.fluidModelService.behaviorSubjectObservable$.subscribe(data => {

@@ -4,6 +4,8 @@ import { AzureMember } from '@fluidframework/azure-client';
 import { FluidContainerService } from './fluid-container.service';
 import { Item } from '../item';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { SignalManager } from '@fluid-experimental/data-objects';
+import { MouseTracker } from './mouse-tracker';
 
 export type TodoModel = Readonly<{
     createTodo(todoId: string, myAuthor: AzureMember): any;
@@ -27,11 +29,18 @@ export class FluidModelService {
         this.behaviorSubjectObservable$ = this.behaviorSubject$.asObservable();
     }
 
-    async initSharedMap() {
+    async initFluidContainer() {
         if (!this.todosSharedMap) {
             const fluidData = await this.fluidContainerService.getFluidData();
             this.todosSharedMap = fluidData.sharedMap;
             this.syncTodosData();
+
+            // Track mouse movement for all collaborators
+            const mouseTracker = new MouseTracker(
+                fluidData.container,
+                fluidData.services.audience,
+                fluidData.container.initialObjects.signaler as SignalManager,
+            );
         }
     }
 
