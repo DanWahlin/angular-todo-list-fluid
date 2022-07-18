@@ -5,13 +5,15 @@
       <input matInput #newItem placeholder="add an item..." formControlName="item" />
     </mat-form-field>
 
-    <button class="add-button" mat-raised-button color="primary" [disabled]="todoForm.invalid"
+    <button class="add-button" mat-stroked-button color="primary" [disabled]="todoForm.invalid"
       (click)="addItem(newItem.value)">
+      <mat-icon aria-hidden="false" aria-label="Add todo icon">add_circle</mat-icon>
       Add
     </button>
-    <button class="add-button" mat-raised-button color="secondary" 
-      (click)="showUsers = !showUsers">
-      {{ showUsers? 'Hide Active Users' : 'Show Active Users' }}
+    <button class="show-users-button" mat-stroked-button color="secondary" 
+        (click)="showUsers = !showUsers">
+        <mat-icon aria-hidden="false" aria-label="Person icon">person</mat-icon>
+        {{ showUsers? 'Hide Active Users' : 'Show Active Users' }}
     </button>
   </form>
   <mat-error *ngIf="
