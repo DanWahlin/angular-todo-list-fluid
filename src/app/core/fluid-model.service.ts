@@ -1,18 +1,11 @@
 import { Injectable } from '@angular/core';
 import { SharedMap } from 'fluid-framework';
-import { AzureMember } from '@fluidframework/azure-client';
 import { FluidContainerService } from './fluid-container.service';
 import { Item } from '../item';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { SignalManager } from '@fluid-experimental/data-objects';
 import { MouseTracker } from './mouse-tracker';
-
-export type TodoModel = Readonly<{
-    createTodo(todoId: string, myAuthor: AzureMember): any;
-    moveTodo(todoId: string, newPos: number): void;
-    setChangeListener(listener: () => void): void;
-    removeChangeListener(listener: () => void): void;
-}>;
+import { FluidData } from '../shared/types';
 
 @Injectable({
     providedIn: 'root'
@@ -21,7 +14,9 @@ export class FluidModelService {
     todosSharedMap: SharedMap | undefined;
     todoItems: Item[] | undefined;
     doneItems: Item[] | undefined;
+    mouseTracker: MouseTracker | undefined;
     syncSharedMap: (() => void) | undefined;
+    fluidData: FluidData | undefined;
     private behaviorSubject$ = new BehaviorSubject({todoItems: [] as Item[], doneItems: [] as Item[]});
     behaviorSubjectObservable$: Observable<{todoItems: Item[], doneItems: Item[]}>;
 
@@ -29,17 +24,17 @@ export class FluidModelService {
         this.behaviorSubjectObservable$ = this.behaviorSubject$.asObservable();
     }
 
-    async initFluidContainer() {
+    async initFluid() {
         if (!this.todosSharedMap) {
-            const fluidData = await this.fluidContainerService.getFluidData();
-            this.todosSharedMap = fluidData.sharedMap;
+            this.fluidData = await this.fluidContainerService.getFluidData();
+            this.todosSharedMap = this.fluidData.sharedMap;
             this.syncTodosData();
 
             // Track mouse movement for all collaborators
-            const mouseTracker = new MouseTracker(
-                fluidData.container,
-                fluidData.services.audience,
-                fluidData.container.initialObjects.signaler as SignalManager,
+            this.mouseTracker = new MouseTracker(
+                this.fluidData.container,
+                this.fluidData.services.audience,
+                this.fluidData.container.initialObjects.signaler as SignalManager,
             );
         }
     }

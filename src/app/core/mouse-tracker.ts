@@ -1,4 +1,5 @@
 import { SignalManager } from "@fluid-experimental/data-objects";
+import { AzureMember } from "@fluidframework/azure-client";
 import { IEvent } from "@fluidframework/common-definitions";
 import { TypedEventEmitter } from "@fluidframework/common-utils";
 import {
@@ -84,13 +85,13 @@ export class MouseTracker extends TypedEventEmitter<IMouseTrackerEvents> {
         );
     }
 
-    public getMousePresences(): Map<string, IMousePosition> {
-        const statuses: Map<string, IMousePosition> = new Map <string, IMousePosition>();
+    public getMousePresences(): Map<AzureMember, IMousePosition> {
+        const statuses: Map<AzureMember, IMousePosition> = new Map <AzureMember, IMousePosition>();
         this.audience.getMembers().forEach((member, userId) => {
             member.connections.forEach((connection) => {
                 const position = this.getMousePresenceForUser(userId, connection.id);
                 if (position !== undefined) {
-                    statuses.set((member as any).userName, position);
+                    statuses.set((member as AzureMember), position);
                 }
             });
         });

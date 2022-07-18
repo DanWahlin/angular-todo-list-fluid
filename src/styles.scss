@@ -9,6 +9,17 @@ body {
   text-align: center;
 }
 
+svg path {
+  transform: translate(30%, 0) scale(.5, .5);
+}
+
+svg text {
+  transform: translate(.5%, .5%);
+  text-anchor: middle;
+  dominant-baseline: middle;
+  font-size: 8pt;
+}
+
 .mat-button.mat-accent,
 .mat-icon-button.mat-accent,
 .mat-stroked-button.mat-accent {
