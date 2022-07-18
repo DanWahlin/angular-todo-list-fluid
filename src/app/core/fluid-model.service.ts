@@ -53,7 +53,6 @@ export class FluidModelService {
           this.syncSharedMap = () => { 
             this.todoItems = this.todosSharedMap!.get('todoItems') ?? [];
             this.doneItems = this.todosSharedMap!.get('doneItems') ?? [];
-
             // Notify listeners that shared map data has changed.
             this.behaviorSubject$.next({todoItems: this.todoItems, doneItems: this.doneItems});
           };

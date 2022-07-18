@@ -31,9 +31,6 @@ export class ToDoListComponent implements OnInit {
     }
   }
 
-  items: Item[] = [];
-  done: Item[] = [];
-
   todoItems: Item[] = [];
   doneItems: Item[] = [];
 
@@ -58,7 +55,7 @@ export class ToDoListComponent implements OnInit {
   }
 
   updateTodosSharedMap() {
-    this.fluidModelService.updateTodosSharedMap(this.items, this.done);
+    this.fluidModelService.updateTodosSharedMap(this.todoItems, this.doneItems);
   }
 
   renderMousePresence(mouseTracker: MouseTracker, div: HTMLDivElement) {
@@ -84,22 +81,23 @@ export class ToDoListComponent implements OnInit {
   }
 
   addItem(description: string) {
-    this.items.unshift({
+    this.todoItems.unshift({
       id: uuid(),
       description,
       done: false,
     });
+    console.log('Items', this.todoItems);
     this.todoForm.reset();
     this.updateTodosSharedMap();
   }
 
   deleteItem(item: any) {
-    this.items.splice(item, 1);
+    this.todoItems.splice(item, 1);
     this.updateTodosSharedMap();
   }
 
   deleteDoneItem(item: any) {
-    this.done.splice(item, 1);
+    this.doneItems.splice(item, 1);
     this.updateTodosSharedMap();
   }
 
@@ -110,7 +108,7 @@ export class ToDoListComponent implements OnInit {
         event.previousIndex,
         event.currentIndex
       );
-      this.items = event.container.data;
+      this.todoItems = event.container.data;
     } else {
       transferArrayItem(
         event.previousContainer.data,
@@ -118,8 +116,8 @@ export class ToDoListComponent implements OnInit {
         event.previousIndex,
         event.currentIndex
       );
-      this.items = (event.previousContainer.id === 'items-container') ? event.previousContainer.data : event.container.data;
-      this.done = (event.previousContainer.id === 'done-container') ? event.previousContainer.data : event.container.data;
+      this.todoItems = (event.previousContainer.id === 'items-container') ? event.previousContainer.data : event.container.data;
+      this.doneItems = (event.previousContainer.id === 'done-container') ? event.previousContainer.data : event.container.data;
     }
     this.updateTodosSharedMap();
   }

@@ -79,7 +79,6 @@ export class MouseTracker extends TypedEventEmitter<IMouseTrackerEvents> {
                 const yThrottle = position.y >= this.prevPosition.y + (this.prevPosition.y * throttleThreshold) || 
                                   position.y <= this.prevPosition.y - (this.prevPosition.y * throttleThreshold);
                 if (xThrottle || yThrottle) {
-                    console.log("Sending mouse signal");
                     this.sendMouseSignal(position);
                 }
             }
