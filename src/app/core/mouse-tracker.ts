@@ -2,11 +2,7 @@ import { SignalManager } from "@fluid-experimental/data-objects";
 import { AzureMember } from "@fluidframework/azure-client";
 import { IEvent } from "@fluidframework/common-definitions";
 import { TypedEventEmitter } from "@fluidframework/common-utils";
-import {
-    IFluidContainer,
-    IMember,
-    IServiceAudience,
-} from "fluid-framework";
+import { IFluidContainer, IMember, IServiceAudience } from "fluid-framework";
 
 export interface IMouseTrackerEvents extends IEvent {
     (event: "mousePositionChanged", listener: () => void): void;
@@ -19,6 +15,7 @@ export interface IMousePosition {
 
 export class MouseTracker extends TypedEventEmitter<IMouseTrackerEvents> {
     private static readonly mouseSignalType = "positionChanged";
+    private prevPosition: IMousePosition | undefined;
 
     /**
      * Local map of mouse position status for clients
@@ -38,6 +35,7 @@ export class MouseTracker extends TypedEventEmitter<IMouseTrackerEvents> {
             clientIdMap = new Map<string, IMousePosition>();
             this.posMap.set(userId, clientIdMap);
         }
+
         clientIdMap.set(clientId, position);
         this.emit("mousePositionChanged");
     };
@@ -63,15 +61,33 @@ export class MouseTracker extends TypedEventEmitter<IMouseTrackerEvents> {
         this.signalManager.on("error", (error) => {
             this.emit("error", error);
         });
+
         this.signalManager.onSignal(MouseTracker.mouseSignalType, (clientId, local, payload) => {
             this.onMouseSignalFn(clientId, payload);
         });
+
         window.addEventListener("mousemove", (e) => {
             const position: IMousePosition = {
                 x: e.clientX,
                 y: e.clientY,
             };
-            this.sendMouseSignal(position);
+            // Throttling code to avoid sending too many signals
+            if (this.prevPosition) {
+                const throttleThreshold = .02;
+                const xThrottle = position.x >= this.prevPosition.x + (this.prevPosition.x * throttleThreshold) || 
+                                  position.x <= this.prevPosition.x - (this.prevPosition.x * throttleThreshold);
+                const yThrottle = position.y >= this.prevPosition.y + (this.prevPosition.y * throttleThreshold) || 
+                                  position.y <= this.prevPosition.y - (this.prevPosition.y * throttleThreshold);
+                if (xThrottle || yThrottle) {
+                    console.log("Sending mouse signal");
+                    this.sendMouseSignal(position);
+                }
+            }
+            else {
+                this.sendMouseSignal(position);
+            }
+            this.prevPosition = position;
+
         });
     }
 
